@@ -377,3 +377,94 @@ GREEN ON
 SMASH THAT UNSUBSCRIBE BUTTON
 RED OFF
 ```
+# Ex6
+The following codes implement the OOP class design: “Automobile”. However, these codes have some problems with OOP principles. Try to run these codes, then find the problems and fix them as much as possible.
+|                    Automobile                   |
+|:-------------------------------------------:|
+| - fuel: double                                 |
+| - speed: double |
+| - license: String |
+| |
+| - accelerate(double v): void |
+| - decelerate(double v): void |
+```java
+class Automobile {
+  // These variables are
+  // - Not private: anyone can access them
+  // - Static: they are shared by all instances of the class
+
+  static double fuel;
+  static double speed;
+  static String license;
+
+  // These methods are
+  // - Not public: they can only be accessed by other methods in the class
+
+  static void init(double f, double s, String l) {
+    fuel = f;
+    speed = s;
+    license = l;
+  }
+
+  static void accelerate(double v) {
+    if (fuel > 0) speed += v;
+  }
+  static void decelerate(double v) {
+    if (fuel <= 0) speed -= v;
+  }
+
+  public static void main(String args[]) {
+    init(4.5,34,"29JAD");
+    accelerate(4);
+    decelerate(5);
+  }
+}
+```
+**Solution**
+## File Automobile.java
+```java
+public class Automobile {
+  private double fuel;
+  private double speed;
+  private String license;
+
+  public void init(double fuel, double speed, String license) {
+    this.fuel = fuel;
+    this.speed = speed;
+    this.license = license;
+  }
+
+  public void accelerate(double amount) {
+    if (amount > 0 && fuel > 0) {
+      speed += amount;
+    }
+  }
+  public void decelerate(double amount) {
+    if (amount > 0 && fuel <= 0) {
+      speed -= amount;
+    }
+  }
+  public String toString() {
+    return "Fuel: " + fuel + " Speed: " + speed + " License: " + license;
+  }
+}
+```
+Test function file
+## File AutomobileTestDrive.java
+```java
+public class AutomobileTestDrive {
+  public static void main(String[] args) {
+    Automobile a = new Automobile();
+    a.init(10, 0, "ABC123");
+    a.accelerate(10);
+    System.out.println(a);
+    a.decelerate(10);
+    System.out.println(a);
+  }
+}
+```
+Output:
+```txt
+Fuel: 10.0 Speed: 10.0 License: ABC123
+Fuel: 10.0 Speed: 10.0 License: ABC123
+```
