@@ -682,3 +682,259 @@ For example, if you type `java Banner Hello`, the output is:
 
 ## Ex26
 Write a program Circles.java that draws filled circles of random size at random positions in the unit square, producing images like those below. Your program should take four command-line arguments: the number of circles, the probability that each circle is black, the minimum radius, and the maximum radius.
+```java
+import java.awt.Color;
+public class Circles {
+    public static void main(String[] args) {
+        int n = Integer.parseInt(args[0]);
+        double p = Double.parseDouble(args[1]);
+        double min = Double.parseDouble(args[2]);
+        double max = Double.parseDouble(args[3]);
+        StdDraw.setXscale(0, 1);
+        StdDraw.setYscale(0, 1);
+        for (int i = 0; i < n; i++) {
+            double x = Math.random();
+            double y = Math.random();
+            double r = min + Math.random() * (max - min);
+            if (Math.random() < p) {
+                StdDraw.setPenColor(StdDraw.BLACK);
+            } else {
+                StdDraw.setPenColor(StdDraw.WHITE);
+            }
+            StdDraw.filledCircle(x, y, r);
+        }
+    }
+}
+```
+**How to run?**
+
+Compilation:  `javac Circles.java`
+
+Execution:    `java Circles 50 .75 .1 .2`
+
+Output:
+
+[![image.png](https://i.postimg.cc/hG2Stff4/image.png)](https://postimg.cc/GBs0M3F6)
+
+# Part 2
+Write a Java program to manage the employee information of a company as follows:
+- Information of each employee is entered from keyboard, including:
+    - Employee ID
+    - Employee full name
+    - Employee department
+    - Basic salary
+    - Extra salary
+- Number of employees (n) in entered from keyboard
+- Information of n employees are saved in a text file named: `employees.txt` file and calculated by the formula: `income = basic_salary + extra_salary * 2.5`
+- Print out to the screen the following information of n employees:
+    - Employee ID
+    - Employee full name
+    - Employee department
+    - Employee income
+
+**Solution:**
+
+Employee.java
+```java
+import java.io.FileWriter;
+import java.io.BufferedWriter;
+import java.io.IOException;
+
+public class Employee {
+  private String ID;
+  private String name;
+  private String department;
+  private double basic_salary;
+  private double extra_salary;
+
+  public Employee(String ID, String name, String department, double basic_salary, double extra_salary) {
+    this.ID = ID;
+    this.name = name;
+    this.department = department;
+    this.basic_salary = basic_salary;
+    this.extra_salary = extra_salary;
+  }
+
+  public String getID() {
+    return ID;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public String getDepartment() {
+    return department;
+  }
+
+  public double getBasic_salary() {
+    return basic_salary;
+  }
+
+  public double getExtra_salary() {
+    return extra_salary;
+  }
+
+  public String toString() {
+    String lineID = "Employee ID: " + ID;
+    String lineName = "Employee full name: " + name;
+    String lineDepartment = "Employee department: " + department;
+    String lineSalary = "Basic salary: " + basic_salary;
+    String lineExtraSalary = "Extra salary: " + extra_salary;
+    return lineID + "\r\n" + lineName + "\r\n" + lineDepartment + "\r\n" + lineSalary + "\r\n" + lineExtraSalary + "\r\n--------------------";
+  }
+
+  public void writeToFile(String path) {
+    try {
+      FileWriter fileWriter = new FileWriter(path, true);
+      BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+      bufferedWriter.write(this.toString());
+      bufferedWriter.newLine();
+      bufferedWriter.close();
+      fileWriter.close();
+    } catch (IOException e) {
+      System.out.println("Error: " + e.getMessage());
+    }
+  }
+}
+```
+Company.java
+```java
+import java.util.Scanner;
+import java.io.*;
+
+public class Company {
+  public static void main(String[] args) {
+    clearScreen();
+    Scanner input = new Scanner(System.in);
+    int choice = 0;
+    while (true) {
+      System.out.println("Welcome to the company database! Enter the number of your choice:");
+      System.out.println("1. Add employee");
+      System.out.println("2. Show employee");
+      System.out.println("3. Exit");
+      System.out.print("Your choice: ");
+      choice = input.nextInt();
+      switch (choice) {
+        case 1:
+          System.out.print("\nHow many employees do you want to add? ");
+          int num = 0;
+          while (true) {
+            try {
+              num = input.nextInt();
+              break;
+            } catch (Exception e) {
+              System.out.print("Please enter an integer: ");
+              input.nextLine();
+            }
+          }
+          for (int i = 0; i < num; i++) {
+            System.out.println("==> Employee " + (i + 1) + ":");
+            System.out.print("Employee ID: ");
+            String ID = input.next();
+            System.out.print("Employee full name: ");
+            String name = input.next();
+            System.out.print("Employee department: ");
+            String department = input.next();
+            System.out.print("Basic salary: ");
+            double basic_salary = 0;
+            while (true) {
+              try {
+                basic_salary = input.nextDouble();
+                if (basic_salary <= 0) {
+                  throw new Exception("Basic salary must be larger than 0!");
+                }
+                break;
+              } catch (Exception e) {
+                System.out.println("Error: basic salary must be a number larger than 0!");
+                System.out.print("Basic salary: ");
+              }
+            }
+            System.out.print("Extra salary: ");
+            double extra_salary = 0;
+            while (true) {
+              try {
+                extra_salary = input.nextDouble();
+                if (extra_salary <= 0) {
+                  throw new Exception("Extra salary must be larger than 0!");
+                }
+                break;
+              } catch (Exception e) {
+                System.out.println("Error: extra salary must be a number larger than 0!");
+                System.out.print("Extra salary: ");
+              }
+            }
+            Employee employee = new Employee(ID, name, department, basic_salary, extra_salary);
+            employee.writeToFile("employee.txt");
+          }
+          clearScreen();
+          break;
+        case 2:
+          clearScreen();
+          showEmployee();
+          System.out.println();
+          break;
+        case 3:
+          input.close();
+          System.exit(0);
+          break;
+        default:
+          System.out.println("Invalid choice!");
+          break;
+      }
+    }
+  }
+
+  private static void showEmployee() {
+    try {
+      FileReader fileReader = new FileReader("./employee.txt");
+      BufferedReader bufferedReader = new BufferedReader(fileReader);
+      String line = bufferedReader.readLine();
+      while (line != null) {
+        if (line.startsWith("Basic salary")) {
+          String[] salary = line.split(": ");
+          double basic_salary = Double.parseDouble(salary[1]);
+          line = bufferedReader.readLine();
+          String[] extra_salary = line.split(": ");
+          double extra_salary_value = Double.parseDouble(extra_salary[1]);
+          System.out.println("Income: " + (basic_salary + extra_salary_value * 2.5));
+          line = bufferedReader.readLine();
+        } else {
+          System.out.println(line);
+          line = bufferedReader.readLine();
+        }
+      }
+      bufferedReader.close();
+      fileReader.close();
+    } catch (IOException e) {
+      System.out.println("Error: " + e.getMessage());
+    }
+  }
+
+  private static void clearScreen() {
+    System.out.print("\033[H\033[2J");
+    System.out.flush();
+  }
+}
+```
+Output:
+```txt
+Employee ID: BA10
+Employee full name: Quang
+Employee department: Anh
+Basic salary: 2000.0
+Extra salary: 5000.0
+--------------------
+```
+```txt
+Employee ID: BA10
+Employee full name: Quang
+Employee department: Anh
+Income: 14500.0
+--------------------
+
+Welcome to the company database! Enter the number of your choice:
+1. Add employee
+2. Show employee
+3. Exit
+```
